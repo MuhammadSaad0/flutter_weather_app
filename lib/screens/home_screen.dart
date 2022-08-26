@@ -1,7 +1,7 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:location/location.dart';
-import 'package:http/http.dart' as http;
+import 'package:flutter_weather/models/WeatherDataObj.dart';
+import 'package:flutter_weather/utils/weather_functions.dart';
+import 'package:glassmorphism_ui/glassmorphism_ui.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -10,50 +10,45 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-void getLoc() async {
-  Location location = Location();
+WeatherObj? current_WeatherObj;
 
-  late bool serviceEnabled;
-  late PermissionStatus permissionGranted;
-  late LocationData locationData;
-  late LocationAccuracy accuracy = LocationAccuracy.high;
-
-  location.changeSettings(accuracy: accuracy);
-  serviceEnabled = await location.serviceEnabled();
-  if (!serviceEnabled) {
-    serviceEnabled = await location.requestService();
-    if (!serviceEnabled) {
-      return;
-    }
-  }
-
-  permissionGranted = await location.hasPermission();
-  if (permissionGranted == PermissionStatus.denied) {
-    permissionGranted = await location.requestPermission();
-    if (permissionGranted != PermissionStatus.granted) {
-      return;
-    }
-  }
-
-  locationData = await location.getLocation();
-
-  var result = await (http.get(Uri.parse(
-      "https://api.openweathermap.org/data/2.5/weather?lat=${locationData.latitude}&lon=${locationData.longitude}&appid=3359feef40522cf41e54bdf8770a0ef5")));
-  print(jsonDecode(result.body));
+void callWeatherFunc() async {
+  current_WeatherObj = await getLocData();
+  print(current_WeatherObj!.area_name);
 }
 
 class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
+    callWeatherFunc();
     return Scaffold(
       body: Center(
-        child: Container(
-            child: TextButton(
-          child: Text("Test"),
-          onPressed: () {
-            getLoc();
-          },
-        )),
+        child: GlassContainer(
+          height: 500,
+          width: 320,
+          blur: 5,
+          color: Colors.white.withOpacity(0.6),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              const Color.fromARGB(174, 3, 168, 244).withOpacity(0.5),
+              const Color.fromARGB(255, 49, 122, 249).withOpacity(0.4),
+            ],
+          ),
+          //--code to remove border
+          border: const Border.fromBorderSide(BorderSide.none),
+          shadowStrength: 12,
+          shape: BoxShape.rectangle,
+          borderRadius: BorderRadius.circular(12),
+          shadowColor: Colors.black.withOpacity(0.18),
+          child: Column(children: [
+            SizedBox(
+              height: 20,
+            ),
+            Text(current_WeatherObj!.area_name),
+          ]),
+        ),
       ),
     );
   }

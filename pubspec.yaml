@@ -30,6 +30,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   flutter:
     sdk: flutter
+  glassmorphism_ui: ^0.3.0
   http: ^0.13.5
   location: ^4.4.0
 
