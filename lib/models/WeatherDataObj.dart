@@ -16,7 +16,7 @@ class WeatherObj {
     return WeatherObj(
         current_temp: json["main"]["temp"],
         feels_like_temp: json["main"]["feels_like"],
-        weather_description: json["weather"][0]["description"],
+        weather_description: json["weather"][0]["main"],
         area_name: json["name"],
         humidity: json["main"]["humidity"]);
   }
